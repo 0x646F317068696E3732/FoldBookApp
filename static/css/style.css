@@ -293,74 +293,222 @@ p {
     justify-content: center;
     align-items: center;
     height: 400px;
+    perspective: 1000px;
 }
 
 .book {
     position: relative;
-    width: 200px;
-    height: 260px;
+    width: 180px;
+    height: 240px;
     transform-style: preserve-3d;
-    animation: bookRotate 10s infinite;
+    animation: bookFloat 6s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
+.book:hover {
+    animation-play-state: paused;
+    transform: rotateY(-25deg) rotateX(10deg) scale(1.1);
+}
+
+/* Book Spine */
 .book-spine {
+    position: absolute;
+    left: -15px;
+    top: 0;
+    width: 30px;
+    height: 240px;
+    background: linear-gradient(135deg, #6B46C1 0%, #8B5CF6 50%, #A855F7 100%);
+    border-radius: 4px 0 0 4px;
+    transform-origin: right center;
+    transform: rotateY(-90deg);
+    box-shadow: 
+        inset 2px 0 4px rgba(255,255,255,0.3),
+        inset -2px 0 4px rgba(0,0,0,0.3);
+}
+
+.book-spine::before {
+    content: 'BookFold Art';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Book Cover */
+.book-cover {
     position: absolute;
     left: 0;
     top: 0;
-    width: 20px;
-    height: 100%;
-    background: var(--gradient-primary);
-    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-}
-
-.book-cover {
-    position: absolute;
-    left: 20px;
-    top: 0;
     width: 180px;
-    height: 100%;
-    background: var(--bg-secondary);
+    height: 240px;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     border: 2px solid var(--primary-color);
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: var(--primary-color);
+    border-radius: 0 4px 4px 0;
+    box-shadow: 
+        0 8px 25px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    overflow: hidden;
 }
 
+.book-cover::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 2px;
+    opacity: 0.5;
+}
+
+.book-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-color);
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 10;
+}
+
+.book-subtitle {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--accent-color);
+    font-size: 10px;
+    text-align: center;
+}
+
+/* Book Pages */
 .book-pages {
     position: absolute;
-    left: 25px;
-    top: 5px;
+    left: 5px;
+    top: 3px;
     width: 170px;
-    height: 250px;
+    height: 234px;
+    transform-style: preserve-3d;
 }
 
 .page {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    animation: pageFlip 3s infinite;
+    background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 0 3px 3px 0;
+    transform-origin: left center;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
 }
 
-.page:nth-child(1) { animation-delay: 0s; }
-.page:nth-child(2) { animation-delay: 0.6s; }
-.page:nth-child(3) { animation-delay: 1.2s; }
-.page:nth-child(4) { animation-delay: 1.8s; }
-.page:nth-child(5) { animation-delay: 2.4s; }
-
-@keyframes bookRotate {
-    0%, 100% { transform: rotateY(-10deg) rotateX(5deg); }
-    50% { transform: rotateY(10deg) rotateX(-5deg); }
+.page::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    height: 1px;
+    background: #cbd5e1;
+    opacity: 0.5;
 }
 
-@keyframes pageFlip {
-    0%, 70% { transform: rotateY(0deg); }
-    80%, 90% { transform: rotateY(-15deg); }
-    95%, 100% { transform: rotateY(0deg); }
+.page::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    background: 
+        repeating-linear-gradient(
+            transparent,
+            transparent 14px,
+            #e2e8f0 14px,
+            #e2e8f0 15px
+        );
+    opacity: 0.3;
+}
+
+/* Folded pages with different positions */
+.page:nth-child(1) { 
+    z-index: 5;
+    animation: pageWave1 4s ease-in-out infinite;
+}
+.page:nth-child(2) { 
+    z-index: 4;
+    left: 2px;
+    animation: pageWave2 4s ease-in-out infinite 0.5s;
+}
+.page:nth-child(3) { 
+    z-index: 3;
+    left: 4px;
+    animation: pageWave3 4s ease-in-out infinite 1s;
+}
+.page:nth-child(4) { 
+    z-index: 2;
+    left: 6px;
+    animation: pageWave4 4s ease-in-out infinite 1.5s;
+}
+.page:nth-child(5) { 
+    z-index: 1;
+    left: 8px;
+    animation: pageWave5 4s ease-in-out infinite 2s;
+}
+
+/* Book floating animation */
+@keyframes bookFloat {
+    0%, 100% { 
+        transform: rotateY(-15deg) rotateX(5deg) translateY(0px);
+    }
+    50% { 
+        transform: rotateY(15deg) rotateX(-5deg) translateY(-10px);
+    }
+}
+
+/* Page folding animations */
+@keyframes pageWave1 {
+    0%, 100% { transform: rotateY(0deg); }
+    25% { transform: rotateY(-20deg); }
+    50% { transform: rotateY(-10deg); }
+    75% { transform: rotateY(-25deg); }
+}
+
+@keyframes pageWave2 {
+    0%, 100% { transform: rotateY(0deg); }
+    25% { transform: rotateY(-15deg); }
+    50% { transform: rotateY(-5deg); }
+    75% { transform: rotateY(-18deg); }
+}
+
+@keyframes pageWave3 {
+    0%, 100% { transform: rotateY(0deg); }
+    25% { transform: rotateY(-12deg); }
+    50% { transform: rotateY(-8deg); }
+    75% { transform: rotateY(-15deg); }
+}
+
+@keyframes pageWave4 {
+    0%, 100% { transform: rotateY(0deg); }
+    25% { transform: rotateY(-8deg); }
+    50% { transform: rotateY(-12deg); }
+    75% { transform: rotateY(-10deg); }
+}
+
+@keyframes pageWave5 {
+    0%, 100% { transform: rotateY(0deg); }
+    25% { transform: rotateY(-5deg); }
+    50% { transform: rotateY(-15deg); }
+    75% { transform: rotateY(-8deg); }
 }
 
 /* Buttons */
