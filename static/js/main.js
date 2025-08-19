@@ -314,7 +314,7 @@ class BookFoldingApp {
             page.className = 'corner-fold-page';
             page.style.zIndex = 100 - index;
             page.style.left = `${index * 3}px`;
-            page.style.animationDelay = `${index * 0.2}s`;
+
             
             // Create page with corner fold indicator
             const pageContent = document.createElement('div');
@@ -377,7 +377,7 @@ class BookFoldingApp {
         pattern.forEach((fold, index) => {
             const instruction = document.createElement('div');
             instruction.className = 'instruction-visual';
-            instruction.style.animationDelay = `${index * 0.05}s`;
+
             
             // Create visual book representation
             const bookVisual = document.createElement('div');
