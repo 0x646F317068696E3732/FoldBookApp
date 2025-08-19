@@ -358,8 +358,9 @@ p {
 }
 
 @keyframes pageFlip {
-    0%, 80% { transform: rotateY(0deg); }
-    90%, 100% { transform: rotateY(180deg); }
+    0%, 70% { transform: rotateY(0deg); }
+    80%, 90% { transform: rotateY(-15deg); }
+    95%, 100% { transform: rotateY(0deg); }
 }
 
 /* Buttons */
@@ -621,8 +622,15 @@ p {
 }
 
 .specs-title {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
     color: var(--primary-color);
+}
+
+.specs-description {
+    margin-bottom: var(--spacing-md);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-style: italic;
 }
 
 .specs-grid {
@@ -717,14 +725,71 @@ p {
     margin-bottom: var(--spacing-lg);
 }
 
-.pattern-chart {
+.pattern-visual {
     height: 300px;
     background: var(--bg-secondary);
     border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    overflow: hidden;
+    position: relative;
+}
+
+.book-visualization {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    perspective: 1000px;
+}
+
+.book-pages-container {
+    position: relative;
+    width: 200px;
+    height: 250px;
+    transform-style: preserve-3d;
+}
+
+.folded-page {
+    position: absolute;
+    width: 180px;
+    height: 240px;
+    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 0 4px 4px 0;
+    transform-origin: left center;
+    transition: transform 0.5s ease;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+}
+
+.folded-page.active {
+    animation: foldPage 2s ease-in-out infinite;
+}
+
+.folded-page .fold-line {
+    position: absolute;
+    left: 0;
+    width: 2px;
+    background: var(--primary-color);
+    border-radius: 1px;
+    animation: foldHighlight 2s ease-in-out infinite;
+}
+
+.form-help {
+    display: block;
+    margin-top: var(--spacing-xs);
+    font-size: 0.85rem;
     color: var(--text-muted);
+    font-style: italic;
+}
+
+@keyframes foldPage {
+    0%, 100% { transform: rotateY(0deg); }
+    50% { transform: rotateY(-25deg); }
+}
+
+@keyframes foldHighlight {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; transform: scaleX(1.5); }
 }
 
 .instructions-container {

@@ -116,6 +116,7 @@
                 <!-- Book Specifications -->
                 <div class="book-specs">
                     <h4 class="specs-title">Параметры книги</h4>
+                    <p class="specs-description">Измерьте вашу книгу линейкой для точного результата</p>
                     <div class="specs-grid">
                         <div class="form-group">
                             <label for="book-pages" class="form-label">Количество страниц</label>
@@ -123,6 +124,7 @@
                                 <input type="range" id="book-pages-slider" min="200" max="1000" value="400" class="range-slider">
                                 <input type="number" id="book-pages" class="form-input small" min="200" max="1000" value="400">
                             </div>
+                            <small class="form-help">Посчитайте общее количество страниц в книге (рекомендуется 400-600)</small>
                         </div>
                         
                         <div class="form-group">
@@ -131,14 +133,16 @@
                                 <input type="range" id="book-height-slider" min="150" max="300" value="200" class="range-slider">
                                 <input type="number" id="book-height" class="form-input small" min="150" max="300" value="200">
                             </div>
+                            <small class="form-help">Измерьте высоту книги линейкой (обычно 200-250мм)</small>
                         </div>
                         
                         <div class="form-group">
-                            <label for="book-width" class="form-label">Ширина (мм)</label>
+                            <label for="book-width" class="form-label">Глубина сгиба (мм)</label>
                             <div class="input-with-slider">
-                                <input type="range" id="book-width-slider" min="10" max="30" value="15" class="range-slider">
-                                <input type="number" id="book-width" class="form-input small" min="10" max="30" value="15">
+                                <input type="range" id="book-width-slider" min="5" max="25" value="15" class="range-slider">
+                                <input type="number" id="book-width" class="form-input small" min="5" max="25" value="15">
                             </div>
+                            <small class="form-help">Насколько глубоко сгибать страницы внутрь книги</small>
                         </div>
                     </div>
                 </div>
@@ -175,8 +179,8 @@
                 
                 <div class="results-content">
                     <div class="pattern-visualization">
-                        <h4>Схема складывания</h4>
-                        <div id="pattern-chart" class="pattern-chart"></div>
+                        <h4>Визуализация согнутых страниц</h4>
+                        <div id="pattern-visual" class="pattern-visual"></div>
                     </div>
                     
                     <div class="instructions-list">

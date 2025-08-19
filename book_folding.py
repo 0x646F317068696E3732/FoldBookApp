@@ -327,20 +327,19 @@ class BookFoldingGenerator:
         matrix_height = len(matrix)
         matrix_width = len(matrix[0]) if matrix else 0
         
+        # Use ALL even pages (every 2nd page starting from page 2)
         usable_pages = book_pages // 2
         
-        # Calculate scaling
-        pages_per_column = max(1, usable_pages / matrix_width) if matrix_width > 0 else 1
+        # Expand matrix to use more pages - replicate pattern across all available pages
+        expanded_width = usable_pages
         height_per_row = book_height_mm / matrix_height if matrix_height > 0 else book_height_mm
         
-        # Process each column of the matrix
-        for col in range(matrix_width):
-            # Calculate which page this column corresponds to
-            page_offset = int(col / pages_per_column)
-            page_number = (page_offset + 1) * 2  # Only even pages
+        # Process each available page
+        for page_index in range(usable_pages):
+            page_number = (page_index + 1) * 2  # Only even pages: 2, 4, 6, 8...
             
-            if page_number > book_pages:
-                break
+            # Map page to matrix column (repeat pattern if necessary)
+            col = page_index % matrix_width if matrix_width > 0 else 0
             
             # Find fold segments in this column
             fold_segments = self._find_fold_segments(matrix, col)
@@ -359,7 +358,7 @@ class BookFoldingGenerator:
                         'page': page_number,
                         'start_mm': start_mm,
                         'end_mm': end_mm,
-                        'depth_mm': round(book_width_mm * 0.7, 1)  # Fold to 70% depth
+                        'depth_mm': round(book_width_mm * 0.5, 1)  # Fold to 50% depth
                     })
         
         # Sort pattern by page number
