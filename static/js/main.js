@@ -317,7 +317,7 @@ class BookFoldingApp {
             page.style.animationDelay = `${index * 0.3}s`;
             
             // Add fold lines
-            const foldStart = (fold.start_mm / 200) * 100; // Convert to percentage
+            const foldStart = (fold.start_mm / 200) * 100;
             const foldEnd = (fold.end_mm / 200) * 100;
             const foldHeight = foldEnd - foldStart;
             
@@ -329,7 +329,7 @@ class BookFoldingApp {
                 animation-delay: ${index * 0.3}s;
             `;
             
-            // Add page number
+            // Add actual page number from fold data
             const pageNumber = document.createElement('div');
             pageNumber.style.cssText = `
                 position: absolute;
@@ -340,6 +340,7 @@ class BookFoldingApp {
                 background: rgba(255,255,255,0.8);
                 padding: 2px 4px;
                 border-radius: 2px;
+                font-weight: bold;
             `;
             pageNumber.textContent = fold.page;
             
@@ -394,21 +395,62 @@ class BookFoldingApp {
         }
         
         pattern.forEach((fold, index) => {
-            const item = document.createElement('div');
-            item.className = 'instruction-item';
-            item.style.animationDelay = `${index * 0.1}s`;
+            const instruction = document.createElement('div');
+            instruction.className = 'instruction-visual';
+            instruction.style.animationDelay = `${index * 0.05}s`;
             
-            item.innerHTML = `
-                <div class="instruction-number">Шаг ${index + 1}</div>
-                <div class="instruction-details">
-                    <strong>Страница ${fold.page}</strong><br>
-                    Измерить от верха: <span class="measurement">${fold.start_mm} мм</span><br>
-                    Измерить до: <span class="measurement">${fold.end_mm} мм</span><br>
-                    Глубина сгиба: <span class="measurement">${fold.depth_mm} мм</span>
-                </div>
+            // Create visual book representation
+            const bookVisual = document.createElement('div');
+            bookVisual.className = 'instruction-book';
+            
+            const spine = document.createElement('div');
+            spine.className = 'instruction-book-spine';
+            
+            const cover = document.createElement('div');
+            cover.className = 'instruction-book-cover';
+            
+            const foldPage = document.createElement('div');
+            foldPage.className = 'instruction-fold-page folded';
+            
+            // Calculate fold position (assuming 200mm book height)
+            const foldStart = (fold.start_mm / 200) * 100;
+            const foldHeight = ((fold.end_mm - fold.start_mm) / 200) * 100;
+            
+            const foldLine = document.createElement('div');
+            foldLine.className = 'instruction-fold-line';
+            foldLine.style.cssText = `
+                top: ${foldStart}%;
+                height: ${foldHeight}%;
             `;
             
-            container.appendChild(item);
+            foldPage.appendChild(foldLine);
+            bookVisual.appendChild(spine);
+            bookVisual.appendChild(cover);
+            bookVisual.appendChild(foldPage);
+            
+            // Create instruction details
+            const details = document.createElement('div');
+            details.className = 'instruction-details';
+            
+            const pageNumber = document.createElement('div');
+            pageNumber.className = 'instruction-page-number';
+            pageNumber.textContent = `Шаг ${index + 1}: Страница ${fold.page}`;
+            
+            const measurements = document.createElement('div');
+            measurements.className = 'instruction-measurements';
+            measurements.innerHTML = `
+                <span class="measurement-item">От: ${fold.start_mm}мм</span>
+                <span class="measurement-item">До: ${fold.end_mm}мм</span>
+                <span class="measurement-item">Глубина: ${fold.depth_mm}мм</span>
+            `;
+            
+            details.appendChild(pageNumber);
+            details.appendChild(measurements);
+            
+            instruction.appendChild(bookVisual);
+            instruction.appendChild(details);
+            
+            container.appendChild(instruction);
         });
     }
     
