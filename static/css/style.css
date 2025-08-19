@@ -287,84 +287,62 @@ p {
     flex-wrap: wrap;
 }
 
-/* Book Animation */
+/* Book Animation - Открытая книга с согнутыми страницами */
 .book-animation {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 400px;
-    perspective: 1000px;
+    perspective: 1500px;
 }
 
 .book {
     position: relative;
-    width: 180px;
+    width: 320px;
     height: 240px;
     transform-style: preserve-3d;
-    animation: bookFloat 6s ease-in-out infinite;
+    animation: bookFloat 8s ease-in-out infinite;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
 
 .book:hover {
     animation-play-state: paused;
-    transform: rotateY(-25deg) rotateX(10deg) scale(1.1);
+    transform: rotateX(-10deg) rotateY(5deg) scale(1.05);
 }
 
-/* Book Spine */
-.book-spine {
-    position: absolute;
-    left: -15px;
-    top: 0;
-    width: 30px;
-    height: 240px;
-    background: linear-gradient(135deg, #6B46C1 0%, #8B5CF6 50%, #A855F7 100%);
-    border-radius: 4px 0 0 4px;
-    transform-origin: right center;
-    transform: rotateY(-90deg);
-    box-shadow: 
-        inset 2px 0 4px rgba(255,255,255,0.3),
-        inset -2px 0 4px rgba(0,0,0,0.3);
-}
-
-.book-spine::before {
-    content: 'BookFold Art';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(90deg);
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-/* Book Cover */
-.book-cover {
+/* Левая сторона книги */
+.book-left {
     position: absolute;
     left: 0;
     top: 0;
-    width: 180px;
+    width: 160px;
     height: 240px;
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
     border: 2px solid var(--primary-color);
-    border-radius: 0 4px 4px 0;
+    border-radius: 4px 0 0 4px;
+    transform-origin: right center;
     box-shadow: 
-        0 8px 25px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.1);
+        -4px 4px 12px rgba(0,0,0,0.3),
+        inset 2px 0 4px rgba(255,255,255,0.1);
     overflow: hidden;
 }
 
-.book-cover::before {
-    content: '';
+/* Правая сторона книги */
+.book-right {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    border: 1px solid var(--primary-color);
-    border-radius: 2px;
-    opacity: 0.5;
+    right: 0;
+    top: 0;
+    width: 160px;
+    height: 240px;
+    background: linear-gradient(90deg, #334155 0%, #1e293b 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 0 4px 4px 0;
+    transform-origin: left center;
+    box-shadow: 
+        4px 4px 12px rgba(0,0,0,0.3),
+        inset -2px 0 4px rgba(255,255,255,0.1);
+    overflow: hidden;
 }
 
 .book-title {
@@ -373,146 +351,200 @@ p {
     left: 50%;
     transform: translate(-50%, -50%);
     color: var(--primary-color);
-    font-size: 18px;
+    font-size: 14px;
     font-weight: bold;
     text-align: center;
     z-index: 10;
 }
 
-.book-subtitle {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--accent-color);
-    font-size: 10px;
-    text-align: center;
-}
-
-/* Book Pages */
-.book-pages {
+/* Согнутые страницы - левая сторона */
+.book-pages-left {
     position: absolute;
     left: 5px;
-    top: 3px;
-    width: 170px;
-    height: 234px;
+    top: 5px;
+    width: 150px;
+    height: 230px;
     transform-style: preserve-3d;
-    overflow: visible;
 }
 
-.page {
+/* Согнутые страницы - правая сторона */
+.book-pages-right {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 150px;
+    height: 230px;
+    transform-style: preserve-3d;
+}
+
+.folded-page {
     position: absolute;
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
     border: 1px solid #cbd5e1;
-    border-radius: 0 3px 3px 0;
-    transform-origin: left center;
+    border-radius: 2px;
+    transform-origin: center;
     box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
+    overflow: hidden;
 }
 
-.page::before {
+/* Создаем эффект согнутых углов */
+.folded-page::before {
     content: '';
     position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    height: 1px;
-    background: #cbd5e1;
-    opacity: 0.5;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(-45deg, transparent 46%, #cbd5e1 49%, #cbd5e1 51%, transparent 54%);
+    transform: rotate(45deg);
+    transform-origin: bottom left;
 }
 
-.page::after {
+.folded-page::after {
     content: '';
     position: absolute;
-    top: 20px;
+    top: 15px;
     left: 10px;
-    right: 10px;
-    bottom: 10px;
+    right: 30px;
+    bottom: 15px;
     background: 
         repeating-linear-gradient(
             transparent,
-            transparent 14px,
-            #e2e8f0 14px,
-            #e2e8f0 15px
+            transparent 12px,
+            rgba(139, 92, 246, 0.1) 12px,
+            rgba(139, 92, 246, 0.1) 13px
         );
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
-/* Folded pages - создаем вид согнутых внутрь страниц */
-.page:nth-child(1) { 
+/* Анимации сгибания для левых страниц */
+.book-pages-left .folded-page:nth-child(1) {
     z-index: 5;
-    transform: rotateY(-35deg) translateZ(10px);
-    animation: foldedPage1 6s ease-in-out infinite;
+    animation: foldLeft1 4s ease-in-out infinite;
 }
-.page:nth-child(2) { 
+.book-pages-left .folded-page:nth-child(2) {
     z-index: 4;
-    left: 8px;
-    top: 8px;
-    height: calc(100% - 16px);
-    transform: rotateY(-45deg) translateZ(8px);
-    animation: foldedPage2 6s ease-in-out infinite 1s;
+    top: 5px;
+    left: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    animation: foldLeft2 4s ease-in-out infinite 0.5s;
 }
-.page:nth-child(3) { 
+.book-pages-left .folded-page:nth-child(3) {
     z-index: 3;
-    left: 16px;
-    top: 16px;
-    height: calc(100% - 32px);
-    transform: rotateY(-55deg) translateZ(6px);
-    animation: foldedPage3 6s ease-in-out infinite 2s;
+    top: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    animation: foldLeft3 4s ease-in-out infinite 1s;
 }
-.page:nth-child(4) { 
-    z-index: 2;
-    left: 24px;
-    top: 24px;
-    height: calc(100% - 48px);
-    transform: rotateY(-65deg) translateZ(4px);
-    animation: foldedPage4 6s ease-in-out infinite 3s;
+
+/* Анимации сгибания для правых страниц */
+.book-pages-right .folded-page:nth-child(1) {
+    z-index: 5;
+    animation: foldRight1 4s ease-in-out infinite 1.5s;
 }
-.page:nth-child(5) { 
-    z-index: 1;
-    left: 32px;
-    top: 32px;
-    height: calc(100% - 64px);
-    transform: rotateY(-75deg) translateZ(2px);
-    animation: foldedPage5 6s ease-in-out infinite 4s;
+.book-pages-right .folded-page:nth-child(2) {
+    z-index: 4;
+    top: 5px;
+    right: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    animation: foldRight2 4s ease-in-out infinite 2s;
+}
+.book-pages-right .folded-page:nth-child(3) {
+    z-index: 3;
+    top: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    animation: foldRight3 4s ease-in-out infinite 2.5s;
 }
 
 /* Book floating animation */
 @keyframes bookFloat {
     0%, 100% { 
-        transform: rotateY(-15deg) rotateX(5deg) translateY(0px);
+        transform: rotateX(-5deg) rotateY(2deg) translateY(0px);
     }
     50% { 
-        transform: rotateY(15deg) rotateX(-5deg) translateY(-10px);
+        transform: rotateX(-8deg) rotateY(-2deg) translateY(-8px);
     }
 }
 
-/* Page folding animations - имитируем сложенные страницы */
-@keyframes foldedPage1 {
-    0%, 100% { transform: rotateY(-35deg) translateZ(10px); }
-    50% { transform: rotateY(-40deg) translateZ(12px); }
+/* Анимации сгибания углов для левых страниц */
+@keyframes foldLeft1 {
+    0%, 70% { 
+        transform: perspective(400px) rotateY(5deg) rotateX(2deg);
+    }
+    85% { 
+        transform: perspective(400px) rotateY(15deg) rotateX(8deg) translateZ(5px);
+    }
+    100% { 
+        transform: perspective(400px) rotateY(5deg) rotateX(2deg);
+    }
 }
 
-@keyframes foldedPage2 {
-    0%, 100% { transform: rotateY(-45deg) translateZ(8px); }
-    50% { transform: rotateY(-50deg) translateZ(10px); }
+@keyframes foldLeft2 {
+    0%, 70% { 
+        transform: perspective(400px) rotateY(3deg) rotateX(1deg);
+    }
+    85% { 
+        transform: perspective(400px) rotateY(12deg) rotateX(6deg) translateZ(3px);
+    }
+    100% { 
+        transform: perspective(400px) rotateY(3deg) rotateX(1deg);
+    }
 }
 
-@keyframes foldedPage3 {
-    0%, 100% { transform: rotateY(-55deg) translateZ(6px); }
-    50% { transform: rotateY(-60deg) translateZ(8px); }
+@keyframes foldLeft3 {
+    0%, 70% { 
+        transform: perspective(400px) rotateY(1deg) rotateX(0deg);
+    }
+    85% { 
+        transform: perspective(400px) rotateY(8deg) rotateX(4deg) translateZ(2px);
+    }
+    100% { 
+        transform: perspective(400px) rotateY(1deg) rotateX(0deg);
+    }
 }
 
-@keyframes foldedPage4 {
-    0%, 100% { transform: rotateY(-65deg) translateZ(4px); }
-    50% { transform: rotateY(-70deg) translateZ(6px); }
+/* Анимации сгибания углов для правых страниц */
+@keyframes foldRight1 {
+    0%, 70% { 
+        transform: perspective(400px) rotateY(-5deg) rotateX(2deg);
+    }
+    85% { 
+        transform: perspective(400px) rotateY(-15deg) rotateX(8deg) translateZ(5px);
+    }
+    100% { 
+        transform: perspective(400px) rotateY(-5deg) rotateX(2deg);
+    }
 }
 
-@keyframes foldedPage5 {
-    0%, 100% { transform: rotateY(-75deg) translateZ(2px); }
-    50% { transform: rotateY(-80deg) translateZ(4px); }
+@keyframes foldRight2 {
+    0%, 70% { 
+        transform: perspective(400px) rotateY(-3deg) rotateX(1deg);
+    }
+    85% { 
+        transform: perspective(400px) rotateY(-12deg) rotateX(6deg) translateZ(3px);
+    }
+    100% { 
+        transform: perspective(400px) rotateY(-3deg) rotateX(1deg);
+    }
+}
+
+@keyframes foldRight3 {
+    0%, 70% { 
+        transform: perspective(400px) rotateY(-1deg) rotateX(0deg);
+    }
+    85% { 
+        transform: perspective(400px) rotateY(-8deg) rotateX(4deg) translateZ(2px);
+    }
+    100% { 
+        transform: perspective(400px) rotateY(-1deg) rotateX(0deg);
+    }
 }
 
 /* Buttons */
@@ -1006,7 +1038,32 @@ p {
 }
 
 .instruction-fold-page.folded {
-    animation: instructionFold 2s ease-in-out infinite;
+    animation: instructionFold 3s ease-in-out infinite;
+    position: relative;
+}
+
+.instruction-fold-page.folded::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(-45deg, transparent 46%, #8B5CF6 49%, #8B5CF6 51%, transparent 54%);
+    transform-origin: bottom left;
+    animation: cornerFold 3s ease-in-out infinite;
+}
+
+.instruction-fold-page.folded::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(45deg, transparent 46%, #8B5CF6 49%, #8B5CF6 51%, transparent 54%);
+    transform-origin: top left;
+    animation: cornerFold2 3s ease-in-out infinite 0.5s;
 }
 
 .instruction-fold-line {
@@ -1046,9 +1103,45 @@ p {
 }
 
 @keyframes instructionFold {
-    0%, 70% { transform: rotateY(0deg); }
-    85% { transform: rotateY(-25deg); }
-    100% { transform: rotateY(0deg); }
+    0%, 60% { 
+        transform: perspective(200px) rotateY(0deg) rotateX(0deg);
+    }
+    80% { 
+        transform: perspective(200px) rotateY(-20deg) rotateX(5deg) translateZ(3px);
+    }
+    100% { 
+        transform: perspective(200px) rotateY(0deg) rotateX(0deg);
+    }
+}
+
+@keyframes cornerFold {
+    0%, 60% { 
+        transform: rotate(45deg) scale(1);
+        opacity: 0.3;
+    }
+    80% { 
+        transform: rotate(25deg) scale(1.2);
+        opacity: 0.8;
+    }
+    100% { 
+        transform: rotate(45deg) scale(1);
+        opacity: 0.3;
+    }
+}
+
+@keyframes cornerFold2 {
+    0%, 60% { 
+        transform: rotate(45deg) scale(1);
+        opacity: 0.2;
+    }
+    80% { 
+        transform: rotate(65deg) scale(1.1);
+        opacity: 0.6;
+    }
+    100% { 
+        transform: rotate(45deg) scale(1);
+        opacity: 0.2;
+    }
 }
 
 .instructions-container {
