@@ -1,7 +1,7 @@
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, session
-from book_folding_simple import SimpleBookFoldingGenerator
+from book_folding_dual import DualFoldBookGenerator
 import json
 
 logging.basicConfig(level=logging.DEBUG)
@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "book_folding_art_secret_key_2024")
 
 # Initialize book folding generator
-generator = SimpleBookFoldingGenerator()
+generator = DualFoldBookGenerator()
 
 @app.route('/')
 def index():
@@ -38,14 +38,19 @@ def generate_pattern():
         if book_pages < 200:
             return jsonify({'error': 'Минимальное количество страниц: 200'}), 400
         
-        # Set book parameters (только страницы и высота)
-        generator.set_book_parameters(book_pages, book_height)
-        
         # Generate the folding pattern
-        pattern = generator.text_to_pattern(text)
+        pattern = generator.generate_pattern(text, book_pages, book_height)
         
-        # Calculate statistics using the generator's method
-        stats = generator.calculate_statistics(pattern)
+        # Calculate statistics
+        total_folds = len(pattern) * 2  # Каждая страница имеет 2 сгиба
+        pages_used = len(pattern)
+        estimated_time = total_folds * 2  # 2 минуты на сгиб
+        
+        stats = {
+            'total_folds': total_folds,
+            'pages_used': pages_used,
+            'estimated_time_minutes': estimated_time
+        }
         
         result = {
             'pattern': pattern,
@@ -114,10 +119,19 @@ def generate_template_pattern():
         
         text = template_texts.get(template_id, template_id.upper())
         
-        # Set parameters and generate
-        generator.set_book_parameters(book_pages, book_height)
-        pattern = generator.text_to_pattern(text)
-        stats = generator.calculate_statistics(pattern)
+        # Generate pattern
+        pattern = generator.generate_pattern(text, book_pages, book_height)
+        
+        # Calculate statistics
+        total_folds = len(pattern) * 2  # Каждая страница имеет 2 сгиба
+        pages_used = len(pattern)
+        estimated_time = total_folds * 2  # 2 минуты на сгиб
+        
+        stats = {
+            'total_folds': total_folds,
+            'pages_used': pages_used,
+            'estimated_time_minutes': estimated_time
+        }
         
         result = {
             'pattern': pattern,
