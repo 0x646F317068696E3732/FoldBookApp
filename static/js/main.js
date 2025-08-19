@@ -381,8 +381,7 @@ class BookFoldingApp {
             const instruction = document.createElement('div');
             instruction.className = 'instruction-visual';
 
-            
-            // Create visual book representation
+            // Create visual book representation  
             const bookVisual = document.createElement('div');
             bookVisual.className = 'instruction-book';
             
@@ -395,28 +394,35 @@ class BookFoldingApp {
             const foldPage = document.createElement('div');
             foldPage.className = 'instruction-fold-page folded';
             
-            // Create corner fold indicator
-            const cornerFold = document.createElement('div');
-            cornerFold.className = `corner-fold-indicator ${fold.fold_type}`;
-            cornerFold.style.cssText = `
+            // Create top fold indicator
+            const topFold = document.createElement('div');
+            topFold.className = 'corner-fold-indicator top';
+            topFold.style.cssText = `
                 position: absolute;
                 background: var(--primary-color);
                 opacity: 0.8;
                 border-radius: 2px;
-            `;
-            
-            // Always create both fold indicators
-            cornerFold.style.cssText += `
                 top: 10px;
                 left: 10px;
                 width: 30px;
                 height: 15px;
             `;
             
-            const bottomFold = cornerFold.cloneNode(true);
-            bottomFold.style.cssText = bottomFold.style.cssText.replace('top: 10px', 'bottom: 10px');
+            // Create bottom fold indicator
+            const bottomFold = document.createElement('div');
+            bottomFold.className = 'corner-fold-indicator bottom';
+            bottomFold.style.cssText = `
+                position: absolute;
+                background: var(--primary-color);
+                opacity: 0.8;
+                border-radius: 2px;
+                bottom: 10px;
+                left: 10px;
+                width: 30px;
+                height: 15px;
+            `;
             
-            foldPage.appendChild(cornerFold);
+            foldPage.appendChild(topFold);
             foldPage.appendChild(bottomFold);
             bookVisual.appendChild(spine);
             bookVisual.appendChild(cover);
@@ -448,20 +454,9 @@ class BookFoldingApp {
     }
     
     animateStats() {
-        document.querySelectorAll('.stat-value').forEach((stat, index) => {
-            const finalValue = parseInt(stat.textContent);
-            let currentValue = 0;
-            const increment = finalValue / 30;
-            
-            const timer = setInterval(() => {
-                currentValue += increment;
-                if (currentValue >= finalValue) {
-                    stat.textContent = finalValue;
-                    clearInterval(timer);
-                } else {
-                    stat.textContent = Math.floor(currentValue);
-                }
-            }, 50);
+        // Static display without animation
+        document.querySelectorAll('.stat-value').forEach((stat) => {
+            // Keep the final value as is, no animation
         });
     }
     
