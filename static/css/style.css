@@ -397,6 +397,7 @@ p {
     width: 170px;
     height: 234px;
     transform-style: preserve-3d;
+    overflow: visible;
 }
 
 .page {
@@ -439,30 +440,43 @@ p {
     opacity: 0.3;
 }
 
-/* Folded pages with different positions */
+/* Folded pages - создаем вид согнутых внутрь страниц */
 .page:nth-child(1) { 
     z-index: 5;
-    animation: pageWave1 4s ease-in-out infinite;
+    transform: rotateY(-35deg) translateZ(10px);
+    animation: foldedPage1 6s ease-in-out infinite;
 }
 .page:nth-child(2) { 
     z-index: 4;
-    left: 2px;
-    animation: pageWave2 4s ease-in-out infinite 0.5s;
+    left: 8px;
+    top: 8px;
+    height: calc(100% - 16px);
+    transform: rotateY(-45deg) translateZ(8px);
+    animation: foldedPage2 6s ease-in-out infinite 1s;
 }
 .page:nth-child(3) { 
     z-index: 3;
-    left: 4px;
-    animation: pageWave3 4s ease-in-out infinite 1s;
+    left: 16px;
+    top: 16px;
+    height: calc(100% - 32px);
+    transform: rotateY(-55deg) translateZ(6px);
+    animation: foldedPage3 6s ease-in-out infinite 2s;
 }
 .page:nth-child(4) { 
     z-index: 2;
-    left: 6px;
-    animation: pageWave4 4s ease-in-out infinite 1.5s;
+    left: 24px;
+    top: 24px;
+    height: calc(100% - 48px);
+    transform: rotateY(-65deg) translateZ(4px);
+    animation: foldedPage4 6s ease-in-out infinite 3s;
 }
 .page:nth-child(5) { 
     z-index: 1;
-    left: 8px;
-    animation: pageWave5 4s ease-in-out infinite 2s;
+    left: 32px;
+    top: 32px;
+    height: calc(100% - 64px);
+    transform: rotateY(-75deg) translateZ(2px);
+    animation: foldedPage5 6s ease-in-out infinite 4s;
 }
 
 /* Book floating animation */
@@ -475,40 +489,30 @@ p {
     }
 }
 
-/* Page folding animations */
-@keyframes pageWave1 {
-    0%, 100% { transform: rotateY(0deg); }
-    25% { transform: rotateY(-20deg); }
-    50% { transform: rotateY(-10deg); }
-    75% { transform: rotateY(-25deg); }
+/* Page folding animations - имитируем сложенные страницы */
+@keyframes foldedPage1 {
+    0%, 100% { transform: rotateY(-35deg) translateZ(10px); }
+    50% { transform: rotateY(-40deg) translateZ(12px); }
 }
 
-@keyframes pageWave2 {
-    0%, 100% { transform: rotateY(0deg); }
-    25% { transform: rotateY(-15deg); }
-    50% { transform: rotateY(-5deg); }
-    75% { transform: rotateY(-18deg); }
+@keyframes foldedPage2 {
+    0%, 100% { transform: rotateY(-45deg) translateZ(8px); }
+    50% { transform: rotateY(-50deg) translateZ(10px); }
 }
 
-@keyframes pageWave3 {
-    0%, 100% { transform: rotateY(0deg); }
-    25% { transform: rotateY(-12deg); }
-    50% { transform: rotateY(-8deg); }
-    75% { transform: rotateY(-15deg); }
+@keyframes foldedPage3 {
+    0%, 100% { transform: rotateY(-55deg) translateZ(6px); }
+    50% { transform: rotateY(-60deg) translateZ(8px); }
 }
 
-@keyframes pageWave4 {
-    0%, 100% { transform: rotateY(0deg); }
-    25% { transform: rotateY(-8deg); }
-    50% { transform: rotateY(-12deg); }
-    75% { transform: rotateY(-10deg); }
+@keyframes foldedPage4 {
+    0%, 100% { transform: rotateY(-65deg) translateZ(4px); }
+    50% { transform: rotateY(-70deg) translateZ(6px); }
 }
 
-@keyframes pageWave5 {
-    0%, 100% { transform: rotateY(0deg); }
-    25% { transform: rotateY(-5deg); }
-    50% { transform: rotateY(-15deg); }
-    75% { transform: rotateY(-8deg); }
+@keyframes foldedPage5 {
+    0%, 100% { transform: rotateY(-75deg) translateZ(2px); }
+    50% { transform: rotateY(-80deg) translateZ(4px); }
 }
 
 /* Buttons */
@@ -938,6 +942,113 @@ p {
 @keyframes foldHighlight {
     0%, 100% { opacity: 0.6; }
     50% { opacity: 1; transform: scaleX(1.5); }
+}
+
+/* Visual Instructions Styles */
+.instruction-visual {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    transition: all 0.3s ease;
+}
+
+.instruction-visual:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+}
+
+.instruction-book {
+    position: relative;
+    width: 60px;
+    height: 80px;
+    transform-style: preserve-3d;
+    flex-shrink: 0;
+}
+
+.instruction-book-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border: 1px solid var(--primary-color);
+    border-radius: 0 2px 2px 0;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+}
+
+.instruction-book-spine {
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 12px;
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 2px 0 0 2px;
+    transform: rotateY(-45deg);
+    transform-origin: right center;
+}
+
+.instruction-fold-page {
+    position: absolute;
+    left: 4px;
+    top: 2px;
+    width: 52px;
+    height: 76px;
+    background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 0 2px 2px 0;
+    transform-origin: left center;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.instruction-fold-page.folded {
+    animation: instructionFold 2s ease-in-out infinite;
+}
+
+.instruction-fold-line {
+    position: absolute;
+    left: 0;
+    width: 2px;
+    background: var(--primary-color);
+    border-radius: 1px;
+    opacity: 0.8;
+}
+
+.instruction-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.instruction-page-number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+.instruction-measurements {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.measurement-item {
+    background: rgba(139, 92, 246, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+@keyframes instructionFold {
+    0%, 70% { transform: rotateY(0deg); }
+    85% { transform: rotateY(-25deg); }
+    100% { transform: rotateY(0deg); }
 }
 
 .instructions-container {
