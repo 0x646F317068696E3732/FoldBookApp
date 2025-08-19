@@ -1,0 +1,584 @@
+class BookFoldingApp {
+    constructor() {
+        this.currentPattern = null;
+        this.selectedTemplate = null;
+        this.templates = null;
+        
+        this.init();
+    }
+    
+    init() {
+        this.bindEvents();
+        this.loadTemplates();
+        this.setupFormSync();
+        this.initAnimations();
+    }
+    
+    bindEvents() {
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+        });
+        
+        // Text input
+        const textInput = document.getElementById('text-input');
+        if (textInput) {
+            textInput.addEventListener('input', () => this.updateTextPreview());
+            textInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.generatePattern();
+                }
+            });
+        }
+        
+        // Generate button
+        const generateBtn = document.getElementById('generate-btn');
+        if (generateBtn) {
+            generateBtn.addEventListener('click', () => this.generatePattern());
+        }
+        
+        // Export button
+        const exportBtn = document.getElementById('export-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.exportPattern());
+        }
+        
+        // New pattern button
+        const newPatternBtn = document.getElementById('new-pattern-btn');
+        if (newPatternBtn) {
+            newPatternBtn.addEventListener('click', () => this.resetForm());
+        }
+        
+        // Gallery items
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.addEventListener('click', () => this.selectGalleryTemplate(item.dataset.template));
+        });
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    }
+    
+    setupFormSync() {
+        // Sync sliders with inputs
+        const syncInputs = [
+            ['book-pages-slider', 'book-pages'],
+            ['book-height-slider', 'book-height'],
+            ['book-width-slider', 'book-width']
+        ];
+        
+        syncInputs.forEach(([sliderId, inputId]) => {
+            const slider = document.getElementById(sliderId);
+            const input = document.getElementById(inputId);
+            
+            if (slider && input) {
+                slider.addEventListener('input', () => input.value = slider.value);
+                input.addEventListener('input', () => slider.value = input.value);
+            }
+        });
+    }
+    
+    async loadTemplates() {
+        try {
+            const response = await fetch('/get_templates');
+            this.templates = await response.json();
+            this.renderTemplates();
+        } catch (error) {
+            console.error('Failed to load templates:', error);
+        }
+    }
+    
+    renderTemplates() {
+        if (!this.templates) return;
+        
+        Object.keys(this.templates).forEach(category => {
+            const grid = document.getElementById(`${category}-grid`);
+            if (grid) {
+                grid.innerHTML = '';
+                this.templates[category].forEach(template => {
+                    const item = this.createTemplateItem(template);
+                    grid.appendChild(item);
+                });
+            }
+        });
+    }
+    
+    createTemplateItem(template) {
+        const item = document.createElement('div');
+        item.className = 'template-item';
+        item.dataset.templateId = template.id;
+        item.title = template.description;
+        
+        // Get icon for template
+        const icon = this.getTemplateIcon(template.id);
+        
+        item.innerHTML = `
+            <div class="template-content">
+                ${icon}
+            </div>
+            <div class="template-label">${template.name}</div>
+        `;
+        
+        item.addEventListener('click', () => this.selectTemplate(template.id));
+        
+        return item;
+    }
+    
+    getTemplateIcon(templateId) {
+        const iconMap = {
+            'apple': '<i class="fab fa-apple"></i>',
+            'nike': '<i class="fas fa-check"></i>',
+            'batman': '<i class="fas fa-mask"></i>',
+            'superman': '<span style="font-family: serif; font-weight: bold;">S</span>',
+            'heart': '<i class="fas fa-heart"></i>',
+            'star': '<i class="fas fa-star"></i>',
+            'peace': '<span>☮</span>',
+            'infinity': '<span>∞</span>',
+            'smile': '<span>😊</span>',
+            'love': '<span>😍</span>',
+            'thumbs_up': '<span>👍</span>',
+            'fire': '<span>🔥</span>'
+        };
+        
+        return iconMap[templateId] || '<i class="fas fa-question"></i>';
+    }
+    
+    switchTab(tabName) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+        
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('active', content.id === `${tabName}-tab`);
+        });
+        
+        // Clear selections when switching tabs
+        this.clearSelections();
+    }
+    
+    clearSelections() {
+        this.selectedTemplate = null;
+        document.querySelectorAll('.template-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+    }
+    
+    selectTemplate(templateId) {
+        this.selectedTemplate = templateId;
+        
+        // Update visual selection
+        document.querySelectorAll('.template-item').forEach(item => {
+            item.classList.toggle('selected', item.dataset.templateId === templateId);
+        });
+    }
+    
+    selectGalleryTemplate(templateId) {
+        // Switch to template tab and select template
+        this.switchTab('template');
+        setTimeout(() => {
+            this.selectTemplate(templateId);
+        }, 100);
+    }
+    
+    updateTextPreview() {
+        const textInput = document.getElementById('text-input');
+        const preview = document.getElementById('text-preview-display');
+        const charCount = document.getElementById('char-count');
+        
+        if (!textInput || !preview || !charCount) return;
+        
+        const text = textInput.value.toUpperCase();
+        charCount.textContent = text.length;
+        
+        if (text) {
+            preview.textContent = text;
+            preview.style.color = 'var(--primary-color)';
+        } else {
+            preview.textContent = 'Введите текст';
+            preview.style.color = 'var(--text-muted)';
+        }
+    }
+    
+    async generatePattern() {
+        const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+        
+        let requestData = {
+            book_pages: parseInt(document.getElementById('book-pages').value),
+            book_height: parseFloat(document.getElementById('book-height').value),
+            book_width: parseFloat(document.getElementById('book-width').value)
+        };
+        
+        let endpoint = '';
+        
+        if (activeTab === 'text') {
+            const text = document.getElementById('text-input').value.trim();
+            if (!text) {
+                this.showError('Пожалуйста, введите текст');
+                return;
+            }
+            
+            requestData.text = text;
+            endpoint = '/generate_pattern';
+        } else if (activeTab === 'template') {
+            if (!this.selectedTemplate) {
+                this.showError('Пожалуйста, выберите шаблон');
+                return;
+            }
+            
+            requestData.template_id = this.selectedTemplate;
+            endpoint = '/generate_template_pattern';
+        }
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка генерации паттерна');
+            }
+            
+            this.currentPattern = data;
+            this.displayResults(data);
+            
+        } catch (error) {
+            this.showError(error.message);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+    
+    displayResults(data) {
+        const resultsSection = document.getElementById('results-section');
+        if (!resultsSection) return;
+        
+        // Update statistics
+        document.getElementById('total-folds').textContent = data.statistics.total_folds;
+        document.getElementById('pages-used').textContent = data.statistics.pages_used;
+        document.getElementById('estimated-time').textContent = data.statistics.estimated_time_minutes;
+        
+        // Display pattern visualization
+        this.renderPatternChart(data.pattern);
+        
+        // Display instructions
+        this.renderInstructions(data.pattern);
+        
+        // Show results section with animation
+        resultsSection.style.display = 'block';
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Animate stats
+        this.animateStats();
+    }
+    
+    renderPatternChart(pattern) {
+        const chart = document.getElementById('pattern-chart');
+        if (!chart) return;
+        
+        chart.innerHTML = '';
+        
+        if (pattern.length === 0) {
+            chart.innerHTML = '<div class="no-pattern">Нет данных для отображения</div>';
+            return;
+        }
+        
+        // Create simple bar chart representation
+        const maxPage = Math.max(...pattern.map(p => p.page));
+        const chartContainer = document.createElement('div');
+        chartContainer.className = 'chart-container';
+        chartContainer.style.cssText = `
+            display: flex;
+            align-items: end;
+            height: 250px;
+            gap: 2px;
+            padding: 20px;
+            overflow-x: auto;
+        `;
+        
+        pattern.forEach((fold, index) => {
+            const bar = document.createElement('div');
+            const height = ((fold.end_mm - fold.start_mm) / 200) * 100; // Normalize to percentage
+            
+            bar.style.cssText = `
+                width: 8px;
+                min-width: 8px;
+                height: ${height}%;
+                background: linear-gradient(to top, var(--primary-color), var(--accent-color));
+                border-radius: 2px;
+                position: relative;
+                transition: all 0.3s ease;
+                animation: barGrow 0.6s ease forwards;
+                animation-delay: ${index * 0.05}s;
+                opacity: 0;
+            `;
+            
+            bar.title = `Страница ${fold.page}: ${fold.start_mm}-${fold.end_mm}мм`;
+            
+            bar.addEventListener('mouseenter', () => {
+                bar.style.transform = 'scaleY(1.1)';
+                bar.style.filter = 'brightness(1.2)';
+            });
+            
+            bar.addEventListener('mouseleave', () => {
+                bar.style.transform = 'scaleY(1)';
+                bar.style.filter = 'brightness(1)';
+            });
+            
+            chartContainer.appendChild(bar);
+        });
+        
+        chart.appendChild(chartContainer);
+        
+        // Add CSS animation for bars
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes barGrow {
+                from {
+                    opacity: 0;
+                    transform: scaleY(0);
+                }
+                to {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    renderInstructions(pattern) {
+        const container = document.getElementById('instructions-container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (pattern.length === 0) {
+            container.innerHTML = '<div class="no-instructions">Нет инструкций для отображения</div>';
+            return;
+        }
+        
+        pattern.forEach((fold, index) => {
+            const item = document.createElement('div');
+            item.className = 'instruction-item';
+            item.style.animationDelay = `${index * 0.1}s`;
+            
+            item.innerHTML = `
+                <div class="instruction-number">Шаг ${index + 1}</div>
+                <div class="instruction-details">
+                    <strong>Страница ${fold.page}</strong><br>
+                    Измерить от верха: <span class="measurement">${fold.start_mm} мм</span><br>
+                    Измерить до: <span class="measurement">${fold.end_mm} мм</span><br>
+                    Глубина сгиба: <span class="measurement">${fold.depth_mm} мм</span>
+                </div>
+            `;
+            
+            container.appendChild(item);
+        });
+    }
+    
+    animateStats() {
+        document.querySelectorAll('.stat-value').forEach((stat, index) => {
+            const finalValue = parseInt(stat.textContent);
+            let currentValue = 0;
+            const increment = finalValue / 30;
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    stat.textContent = finalValue;
+                    clearInterval(timer);
+                } else {
+                    stat.textContent = Math.floor(currentValue);
+                }
+            }, 50);
+        });
+    }
+    
+    async exportPattern() {
+        if (!this.currentPattern) return;
+        
+        try {
+            const response = await fetch('/export_pattern', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.currentPattern)
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка экспорта');
+            }
+            
+            // Download file
+            const blob = new Blob([data.instructions], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = data.filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            this.showSuccess('Инструкции успешно экспортированы!');
+            
+        } catch (error) {
+            this.showError(error.message);
+        }
+    }
+    
+    resetForm() {
+        // Hide results
+        const resultsSection = document.getElementById('results-section');
+        if (resultsSection) {
+            resultsSection.style.display = 'none';
+        }
+        
+        // Clear form data
+        document.getElementById('text-input').value = '';
+        this.updateTextPreview();
+        this.clearSelections();
+        this.currentPattern = null;
+        
+        // Reset to text tab
+        this.switchTab('text');
+        
+        // Scroll to generator
+        document.getElementById('generator').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
+    
+    showLoading(show) {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.classList.toggle('active', show);
+        }
+    }
+    
+    showError(message) {
+        // Create toast notification
+        this.showToast(message, 'error');
+    }
+    
+    showSuccess(message) {
+        this.showToast(message, 'success');
+    }
+    
+    showToast(message, type = 'info') {
+        // Remove existing toasts
+        document.querySelectorAll('.toast').forEach(toast => toast.remove());
+        
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : 'var(--primary-color)'};
+            color: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 10001;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease;
+        `;
+        
+        toast.innerHTML = `
+            <div style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+        
+        // Add click to dismiss
+        toast.addEventListener('click', () => {
+            toast.style.animation = 'slideOutRight 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        });
+    }
+    
+    initAnimations() {
+        // Add scroll-triggered animations if GSAP is available
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Animate sections on scroll
+            gsap.utils.toArray('.glass-card').forEach(card => {
+                gsap.fromTo(card, {
+                    opacity: 0,
+                    y: 50
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 80%",
+                        toggleActions: "play none none reverse"
+                    }
+                });
+            });
+        }
+    }
+}
+
+// Add CSS for toast animations
+const toastStyles = document.createElement('style');
+toastStyles.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(toastStyles);
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new BookFoldingApp();
+});
