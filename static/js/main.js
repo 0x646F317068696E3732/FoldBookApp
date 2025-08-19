@@ -275,7 +275,7 @@ class BookFoldingApp {
         document.getElementById('estimated-time').textContent = data.statistics.estimated_time_minutes;
         
         // Display pattern visualization
-        this.renderPatternChart(data.pattern);
+        this.renderPatternVisualization(data.pattern);
         
         // Display instructions
         this.renderInstructions(data.pattern);
@@ -288,79 +288,98 @@ class BookFoldingApp {
         this.animateStats();
     }
     
-    renderPatternChart(pattern) {
-        const chart = document.getElementById('pattern-chart');
-        if (!chart) return;
+    renderPatternVisualization(pattern) {
+        const visual = document.getElementById('pattern-visual');
+        if (!visual) return;
         
-        chart.innerHTML = '';
+        visual.innerHTML = '';
         
         if (pattern.length === 0) {
-            chart.innerHTML = '<div class="no-pattern">Нет данных для отображения</div>';
+            visual.innerHTML = '<div class="no-pattern">Нет данных для отображения</div>';
             return;
         }
         
-        // Create simple bar chart representation
-        const maxPage = Math.max(...pattern.map(p => p.page));
-        const chartContainer = document.createElement('div');
-        chartContainer.className = 'chart-container';
-        chartContainer.style.cssText = `
-            display: flex;
-            align-items: end;
-            height: 250px;
-            gap: 2px;
-            padding: 20px;
-            overflow-x: auto;
-        `;
+        // Create book visualization
+        const bookContainer = document.createElement('div');
+        bookContainer.className = 'book-visualization';
         
-        pattern.forEach((fold, index) => {
-            const bar = document.createElement('div');
-            const height = ((fold.end_mm - fold.start_mm) / 200) * 100; // Normalize to percentage
+        const pagesContainer = document.createElement('div');
+        pagesContainer.className = 'book-pages-container';
+        
+        // Show only first 10 pages for visualization
+        const visibleFolds = pattern.slice(0, 10);
+        
+        visibleFolds.forEach((fold, index) => {
+            const page = document.createElement('div');
+            page.className = 'folded-page';
+            page.style.zIndex = 100 - index;
+            page.style.left = `${index * 2}px`;
+            page.style.animationDelay = `${index * 0.3}s`;
             
-            bar.style.cssText = `
-                width: 8px;
-                min-width: 8px;
-                height: ${height}%;
-                background: linear-gradient(to top, var(--primary-color), var(--accent-color));
-                border-radius: 2px;
-                position: relative;
-                transition: all 0.3s ease;
-                animation: barGrow 0.6s ease forwards;
-                animation-delay: ${index * 0.05}s;
-                opacity: 0;
+            // Add fold lines
+            const foldStart = (fold.start_mm / 200) * 100; // Convert to percentage
+            const foldEnd = (fold.end_mm / 200) * 100;
+            const foldHeight = foldEnd - foldStart;
+            
+            const foldLine = document.createElement('div');
+            foldLine.className = 'fold-line';
+            foldLine.style.cssText = `
+                top: ${foldStart}%;
+                height: ${foldHeight}%;
+                animation-delay: ${index * 0.3}s;
             `;
             
-            bar.title = `Страница ${fold.page}: ${fold.start_mm}-${fold.end_mm}мм`;
+            // Add page number
+            const pageNumber = document.createElement('div');
+            pageNumber.style.cssText = `
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                font-size: 10px;
+                color: var(--text-muted);
+                background: rgba(255,255,255,0.8);
+                padding: 2px 4px;
+                border-radius: 2px;
+            `;
+            pageNumber.textContent = fold.page;
             
-            bar.addEventListener('mouseenter', () => {
-                bar.style.transform = 'scaleY(1.1)';
-                bar.style.filter = 'brightness(1.2)';
+            page.appendChild(foldLine);
+            page.appendChild(pageNumber);
+            page.classList.add('active');
+            
+            // Add hover effect
+            page.addEventListener('mouseenter', () => {
+                page.style.transform = 'rotateY(-35deg) scale(1.05)';
+                page.style.zIndex = 200;
             });
             
-            bar.addEventListener('mouseleave', () => {
-                bar.style.transform = 'scaleY(1)';
-                bar.style.filter = 'brightness(1)';
+            page.addEventListener('mouseleave', () => {
+                page.style.transform = 'rotateY(0deg) scale(1)';
+                page.style.zIndex = 100 - index;
             });
             
-            chartContainer.appendChild(bar);
+            pagesContainer.appendChild(page);
         });
         
-        chart.appendChild(chartContainer);
-        
-        // Add CSS animation for bars
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes barGrow {
-                from {
-                    opacity: 0;
-                    transform: scaleY(0);
-                }
-                to {
-                    opacity: 1;
-                    transform: scaleY(1);
-                }
-            }
+        // Add summary text
+        const summary = document.createElement('div');
+        summary.style.cssText = `
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
         `;
-        document.head.appendChild(style);
+        summary.innerHTML = `
+            <strong>${pattern.length}</strong> страниц будут согнуты<br>
+            <small>Показаны первые ${Math.min(10, pattern.length)} страниц</small>
+        `;
+        
+        bookContainer.appendChild(pagesContainer);
+        visual.appendChild(bookContainer);
+        visual.appendChild(summary);
     }
     
     renderInstructions(pattern) {
