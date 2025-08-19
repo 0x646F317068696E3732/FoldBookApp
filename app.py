@@ -21,7 +21,10 @@ def index():
 def generate_pattern():
     """Generate folding pattern for given text and book specifications"""
     try:
-        data = request.json
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Нет данных в запросе'}), 400
+            
         text = data.get('text', '').strip().upper()
         book_pages = int(data.get('book_pages', 400))
         book_height = float(data.get('book_height', 200))
@@ -81,7 +84,10 @@ def get_templates():
 def generate_template_pattern():
     """Generate pattern for a predefined template"""
     try:
-        data = request.json
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Нет данных в запросе'}), 400
+            
         template_id = data.get('template_id')
         book_pages = int(data.get('book_pages', 400))
         book_height = float(data.get('book_height', 200))
@@ -129,7 +135,10 @@ def generate_template_pattern():
 def export_pattern():
     """Export pattern as downloadable instructions"""
     try:
-        data = request.json
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Нет данных в запросе'}), 400
+            
         pattern = data.get('pattern', [])
         book_specs = data.get('book_specs', {})
         text_or_template = data.get('text', data.get('template_id', 'Pattern'))
