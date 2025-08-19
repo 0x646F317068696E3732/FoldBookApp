@@ -1539,3 +1539,154 @@ p {
         transform: scaleY(1.1);
     }
 }
+
+/* Corner Fold Page Styles */
+.corner-fold-page {
+    position: relative;
+    width: 180px;
+    height: 240px;
+    background: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    animation: pageSlideIn 0.6s ease-out forwards;
+}
+
+.corner-fold-page:hover {
+    transform: translateY(-5px) rotateY(-5deg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.page-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+}
+
+.page-number {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.corner-fold {
+    position: absolute;
+    background: var(--primary-color);
+    opacity: 0.8;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    animation: foldGlow 2s ease-in-out infinite;
+}
+
+.corner-fold.top {
+    top: 12px;
+    left: 12px;
+    width: 45px;
+    height: 20px;
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+}
+
+.corner-fold.bottom {
+    bottom: 12px;
+    left: 12px;
+    width: 45px;
+    height: 20px;
+    clip-path: polygon(0 0, 80% 0, 100% 100%, 0 100%);
+}
+
+.corner-fold.both {
+    top: 12px;
+    left: 12px;
+    width: 45px;
+    height: 20px;
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+}
+
+.corner-fold.both::after {
+    content: '';
+    position: absolute;
+    bottom: -210px;
+    left: 0;
+    width: 45px;
+    height: 20px;
+    background: var(--primary-color);
+    opacity: 0.8;
+    border-radius: 3px;
+    clip-path: polygon(0 0, 80% 0, 100% 100%, 0 100%);
+}
+
+.fold-measurement {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color: #ffffff;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.book-pages-container {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    perspective: 1000px;
+}
+
+.book-visualization {
+    position: relative;
+    padding: 20px;
+    min-height: 300px;
+}
+
+.corner-fold-indicator {
+    position: absolute;
+    background: var(--primary-color);
+    opacity: 0.8;
+    border-radius: 2px;
+    animation: indicatorPulse 2s ease-in-out infinite;
+}
+
+@keyframes pageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) rotateX(-10deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0);
+    }
+}
+
+@keyframes foldGlow {
+    0%, 100% {
+        box-shadow: 0 0 8px rgba(147, 51, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 16px rgba(147, 51, 234, 0.8);
+    }
+}
+
+@keyframes indicatorPulse {
+    0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
