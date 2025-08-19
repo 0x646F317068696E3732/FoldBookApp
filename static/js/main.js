@@ -71,6 +71,7 @@ class BookFoldingApp {
         const syncInputs = [
             ['book-pages-slider', 'book-pages'],
             ['book-height-slider', 'book-height'],
+            ['book-page-width-slider', 'book-page-width'],
             ['book-width-slider', 'book-width']
         ];
         
@@ -214,6 +215,7 @@ class BookFoldingApp {
         let requestData = {
             book_pages: parseInt(document.getElementById('book-pages').value),
             book_height: parseFloat(document.getElementById('book-height').value),
+            book_page_width: parseFloat(document.getElementById('book-page-width').value),
             book_width: parseFloat(document.getElementById('book-width').value)
         };
         
