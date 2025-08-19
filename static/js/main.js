@@ -214,9 +214,7 @@ class BookFoldingApp {
         
         let requestData = {
             book_pages: parseInt(document.getElementById('book-pages').value),
-            book_height: parseFloat(document.getElementById('book-height').value),
-            book_page_width: parseFloat(document.getElementById('book-page-width').value),
-            book_width: parseFloat(document.getElementById('book-width').value)
+            book_height: parseFloat(document.getElementById('book-height').value)
         };
         
         let endpoint = '';
@@ -313,41 +311,21 @@ class BookFoldingApp {
         
         visibleFolds.forEach((fold, index) => {
             const page = document.createElement('div');
-            page.className = 'folded-page';
+            page.className = 'corner-fold-page';
             page.style.zIndex = 100 - index;
-            page.style.left = `${index * 2}px`;
-            page.style.animationDelay = `${index * 0.3}s`;
+            page.style.left = `${index * 3}px`;
+            page.style.animationDelay = `${index * 0.2}s`;
             
-            // Add fold lines
-            const foldStart = (fold.start_mm / 200) * 100;
-            const foldEnd = (fold.end_mm / 200) * 100;
-            const foldHeight = foldEnd - foldStart;
-            
-            const foldLine = document.createElement('div');
-            foldLine.className = 'fold-line';
-            foldLine.style.cssText = `
-                top: ${foldStart}%;
-                height: ${foldHeight}%;
-                animation-delay: ${index * 0.3}s;
+            // Create page with corner fold indicator
+            const pageContent = document.createElement('div');
+            pageContent.className = 'page-content';
+            pageContent.innerHTML = `
+                <div class="page-number">Стр. ${fold.page}</div>
+                <div class="corner-fold ${fold.fold_type}">
+                    <span class="fold-measurement">${fold.offset_mm}мм</span>
+                </div>
             `;
-            
-            // Add actual page number from fold data
-            const pageNumber = document.createElement('div');
-            pageNumber.style.cssText = `
-                position: absolute;
-                top: 5px;
-                right: 5px;
-                font-size: 10px;
-                color: var(--text-muted);
-                background: rgba(255,255,255,0.8);
-                padding: 2px 4px;
-                border-radius: 2px;
-                font-weight: bold;
-            `;
-            pageNumber.textContent = fold.page;
-            
-            page.appendChild(foldLine);
-            page.appendChild(pageNumber);
+            page.appendChild(pageContent);
             page.classList.add('active');
             
             // Add hover effect
@@ -414,18 +392,44 @@ class BookFoldingApp {
             const foldPage = document.createElement('div');
             foldPage.className = 'instruction-fold-page folded';
             
-            // Calculate fold position (assuming 200mm book height)
-            const foldStart = (fold.start_mm / 200) * 100;
-            const foldHeight = ((fold.end_mm - fold.start_mm) / 200) * 100;
-            
-            const foldLine = document.createElement('div');
-            foldLine.className = 'instruction-fold-line';
-            foldLine.style.cssText = `
-                top: ${foldStart}%;
-                height: ${foldHeight}%;
+            // Create corner fold indicator
+            const cornerFold = document.createElement('div');
+            cornerFold.className = `corner-fold-indicator ${fold.fold_type}`;
+            cornerFold.style.cssText = `
+                position: absolute;
+                background: var(--primary-color);
+                opacity: 0.8;
+                border-radius: 2px;
             `;
             
-            foldPage.appendChild(foldLine);
+            // Set position based on fold type
+            if (fold.fold_type === 'top') {
+                cornerFold.style.cssText += `
+                    top: 10px;
+                    left: 10px;
+                    width: 30px;
+                    height: 15px;
+                `;
+            } else if (fold.fold_type === 'bottom') {
+                cornerFold.style.cssText += `
+                    bottom: 10px;
+                    left: 10px;
+                    width: 30px;
+                    height: 15px;
+                `;
+            } else {
+                cornerFold.style.cssText += `
+                    top: 10px;
+                    left: 10px;
+                    width: 30px;
+                    height: 15px;
+                `;
+                const bottomFold = cornerFold.cloneNode(true);
+                bottomFold.style.cssText = bottomFold.style.cssText.replace('top: 10px', 'bottom: 10px');
+                foldPage.appendChild(bottomFold);
+            }
+            
+            foldPage.appendChild(cornerFold);
             bookVisual.appendChild(spine);
             bookVisual.appendChild(cover);
             bookVisual.appendChild(foldPage);
@@ -438,12 +442,14 @@ class BookFoldingApp {
             pageNumber.className = 'instruction-page-number';
             pageNumber.textContent = `Шаг ${index + 1}: Страница ${fold.page}`;
             
+            const foldTypeText = fold.fold_type === 'top' ? 'верхний угол' :
+                               fold.fold_type === 'bottom' ? 'нижний угол' : 'оба угла';
+            
             const measurements = document.createElement('div');
             measurements.className = 'instruction-measurements';
             measurements.innerHTML = `
-                <span class="measurement-item">От: ${fold.start_mm}мм</span>
-                <span class="measurement-item">До: ${fold.end_mm}мм</span>
-                <span class="measurement-item">Глубина: ${fold.depth_mm}мм</span>
+                <span class="measurement-item">Сгиб: ${foldTypeText}</span>
+                <span class="measurement-item">Отступ: ${fold.offset_mm}мм</span>
             `;
             
             details.appendChild(pageNumber);

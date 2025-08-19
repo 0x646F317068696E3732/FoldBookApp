@@ -1,7 +1,7 @@
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, session
-from book_folding_new import BookFoldingArtGenerator
+from book_folding_simple import SimpleBookFoldingGenerator
 import json
 
 logging.basicConfig(level=logging.DEBUG)
@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "book_folding_art_secret_key_2024")
 
 # Initialize book folding generator
-generator = BookFoldingArtGenerator()
+generator = SimpleBookFoldingGenerator()
 
 @app.route('/')
 def index():
@@ -28,8 +28,6 @@ def generate_pattern():
         text = data.get('text', '').strip().upper()
         book_pages = int(data.get('book_pages', 400))
         book_height = float(data.get('book_height', 200))
-        book_page_width = float(data.get('book_page_width', 120))
-        book_width = float(data.get('book_width', 15))
         
         if not text:
             return jsonify({'error': 'Текст не может быть пустым'}), 400
@@ -40,8 +38,8 @@ def generate_pattern():
         if book_pages < 200:
             return jsonify({'error': 'Минимальное количество страниц: 200'}), 400
         
-        # Set book parameters
-        generator.set_book_parameters(book_pages, book_height, book_page_width, book_width)
+        # Set book parameters (только страницы и высота)
+        generator.set_book_parameters(book_pages, book_height)
         
         # Generate the folding pattern
         pattern = generator.text_to_pattern(text)
@@ -59,9 +57,7 @@ def generate_pattern():
             },
             'book_specs': {
                 'pages': book_pages,
-                'height': book_height,
-                'page_width': book_page_width,
-                'fold_depth': book_width
+                'height': book_height
             }
         }
         
@@ -76,7 +72,19 @@ def generate_pattern():
 @app.route('/get_templates')
 def get_templates():
     """Get predefined templates for common shapes and symbols"""
-    templates = generator.get_predefined_templates()
+    # Простые готовые шаблоны
+    templates = {
+        'logos': [
+            {'id': 'love', 'name': 'LOVE', 'icon': '❤️'},
+            {'id': 'hope', 'name': 'HOPE', 'icon': '🌟'},
+            {'id': 'dream', 'name': 'DREAM', 'icon': '💭'}
+        ],
+        'symbols': [
+            {'id': 'heart', 'name': 'Сердце', 'icon': '♥'},
+            {'id': 'star', 'name': 'Звезда', 'icon': '★'},
+            {'id': 'smile', 'name': 'Улыбка', 'icon': '☺'}
+        ]
+    }
     return jsonify(templates)
 
 @app.route('/generate_template_pattern', methods=['POST'])
@@ -90,37 +98,38 @@ def generate_template_pattern():
         template_id = data.get('template_id')
         book_pages = int(data.get('book_pages', 400))
         book_height = float(data.get('book_height', 200))
-        book_width = float(data.get('book_width', 15))
         
         if not template_id:
             return jsonify({'error': 'Template ID is required'}), 400
         
-        pattern = generator.generate_template_pattern(
-            template_id=template_id,
-            book_pages=book_pages,
-            book_height_mm=book_height,
-            book_width_mm=book_width
-        )
+        # Простая конвертация template_id в текст
+        template_texts = {
+            'love': 'LOVE',
+            'hope': 'HOPE', 
+            'dream': 'DREAM',
+            'heart': '♥',
+            'star': '★',
+            'smile': '☺'
+        }
         
-        if not pattern:
-            return jsonify({'error': 'Шаблон не найден'}), 404
+        text = template_texts.get(template_id, template_id.upper())
         
-        # Calculate statistics
-        total_folds = len(pattern)
-        pages_used = list(set([fold['page'] for fold in pattern]))
+        # Set parameters and generate
+        generator.set_book_parameters(book_pages, book_height)
+        pattern = generator.text_to_pattern(text)
+        stats = generator.calculate_statistics(pattern)
         
         result = {
             'pattern': pattern,
             'statistics': {
-                'total_folds': total_folds,
-                'pages_used': len(pages_used),
+                'total_folds': stats['total_folds'],
+                'pages_used': stats['pages_used'],
                 'template_id': template_id,
-                'estimated_time_minutes': total_folds * 2
+                'estimated_time_minutes': stats['estimated_time_minutes']
             },
             'book_specs': {
                 'pages': book_pages,
-                'height': book_height,
-                'width': book_width
+                'height': book_height
             }
         }
         
@@ -142,8 +151,23 @@ def export_pattern():
         book_specs = data.get('book_specs', {})
         text_or_template = data.get('text', data.get('template_id', 'Pattern'))
         
-        # Generate formatted instructions
-        instructions = generator.format_instructions(pattern, book_specs, text_or_template)
+        # Простое форматирование инструкций
+        instructions = f"ИНСТРУКЦИИ ПО СКЛАДЫВАНИЮ КНИГИ\nТекст: {text_or_template}\n\n"
+        instructions += f"Параметры книги:\n"
+        instructions += f"- Страниц: {book_specs.get('pages', 'не указано')}\n"
+        instructions += f"- Высота: {book_specs.get('height', 'не указана')} мм\n\n"
+        instructions += "ПОШАГОВЫЕ ИНСТРУКЦИИ:\n\n"
+        
+        for i, fold in enumerate(pattern, 1):
+            fold_type = fold.get('fold_type', 'оба')
+            if fold_type == 'top':
+                corner_text = "верхний угол"
+            elif fold_type == 'bottom':
+                corner_text = "нижний угол"
+            else:
+                corner_text = "оба угла"
+                
+            instructions += f"{i}. Страница {fold['page']}: согнуть {corner_text} на {fold['offset_mm']} мм\n"
         
         return jsonify({
             'instructions': instructions,

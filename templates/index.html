@@ -23,93 +23,67 @@
             </div>
             <div class="hero-visual">
                 <div class="book-folding-demo">
-                    <svg viewBox="0 0 400 300" class="folding-demo-svg">
-                        <!-- Книга в раскрытом виде -->
-                        <defs>
-                            <linearGradient id="pageGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#f1f3f4;stop-opacity:1" />
-                            </linearGradient>
-                            <linearGradient id="foldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#e8eaed;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        
-                        <!-- Обложка книги -->
-                        <rect x="50" y="80" width="300" height="180" fill="#2d3436" rx="5"/>
-                        <rect x="55" y="85" width="290" height="170" fill="url(#pageGradient)" rx="3"/>
-                        
-                        <!-- Левая сторона с текстом -->
-                        <g class="left-pages">
-                            <rect x="60" y="90" width="135" height="160" fill="#ffffff" stroke="#e8eaed"/>
-                            <text x="75" y="110" font-family="serif" font-size="8" fill="#666">Страница 42</text>
-                            <line x1="75" y1="115" x2="180" y2="115" stroke="#e8eaed"/>
+                    <svg class="folding-demo-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Левая страница с сгибами углов -->
+                        <g class="page-left">
+                            <!-- Основа страницы -->
+                            <rect x="20" y="50" width="150" height="200" fill="#ffffff" stroke="#e0e0e0" stroke-width="2" rx="5"/>
+                            <text x="25" y="45" font-family="Arial" font-size="12" fill="#666">Страница 124</text>
                             
-                            <!-- Согнутые страницы формирующие букву -->
-                            <g class="folded-text">
-                                <!-- Буква H из согнутых страниц -->
-                                <rect x="90" y="130" width="8" height="60" fill="url(#foldGradient)" transform="skewX(-15)"/>
-                                <rect x="105" y="130" width="8" height="25" fill="url(#foldGradient)" transform="skewX(-15)"/>
-                                <rect x="105" y="165" width="8" height="25" fill="url(#foldGradient)" transform="skewX(-15)"/>
-                                <rect x="120" y="130" width="8" height="60" fill="url(#foldGradient)" transform="skewX(-15)"/>
+                            <!-- Сгибы углов для буквы B -->
+                            <g class="corner-folds-left">
+                                <!-- Верхний сгиб -->
+                                <polygon points="35,65 70,65 67,80 38,80" fill="#9333ea" opacity="0.7"/>
+                                <text x="40" y="60" font-family="Arial" font-size="10" fill="#9333ea" font-weight="bold">15мм</text>
                                 
-                                <!-- Буква I -->
-                                <rect x="140" y="130" width="8" height="60" fill="url(#foldGradient)" transform="skewX(-15)"/>
+                                <!-- Средний сгиб -->
+                                <polygon points="35,120 65,120 62,135 38,135" fill="#9333ea" opacity="0.7"/>
+                                <text x="40" y="115" font-family="Arial" font-size="10" fill="#9333ea" font-weight="bold">12мм</text>
+                                
+                                <!-- Нижний сгиб -->
+                                <polygon points="35,180 70,180 67,195 38,195" fill="#9333ea" opacity="0.7"/>
+                                <text x="40" y="175" font-family="Arial" font-size="10" fill="#9333ea" font-weight="bold">18мм</text>
                             </g>
-                        </g>
-                        
-                        <!-- Правая сторона с текстом -->
-                        <g class="right-pages">
-                            <rect x="205" y="90" width="135" height="160" fill="#ffffff" stroke="#e8eaed"/>
-                            <text x="220" y="110" font-family="serif" font-size="8" fill="#666">Страница 43</text>
-                            <line x1="220" y1="115" x2="325" y2="115" stroke="#e8eaed"/>
                             
-                            <!-- Согнутые страницы продолжение текста -->
-                            <g class="folded-text-right">
-                                <!-- Пустое место для контраста -->
-                                <rect x="230" y="130" width="8" height="20" fill="url(#foldGradient)" transform="skewX(15)"/>
-                                <rect x="245" y="170" width="8" height="20" fill="url(#foldGradient)" transform="skewX(15)"/>
-                                <rect x="260" y="140" width="8" height="40" fill="url(#foldGradient)" transform="skewX(15)"/>
-                            </g>
-                        </g>
-                        
-                        <!-- Центральный сгиб -->
-                        <line x1="200" y1="85" x2="200" y2="255" stroke="#d1d5db" stroke-width="2"/>
-                        
-                        <!-- Тень от книги -->
-                        <ellipse cx="200" cy="270" rx="120" ry="15" fill="#000000" opacity="0.1"/>
-                        
-                        <!-- Анимированные стрелки показывающие направление сгиба -->
-                        <g class="fold-arrows">
+                            <!-- Указатели направления сгибов -->
                             <defs>
-                                <marker id="arrowhead" markerWidth="10" markerHeight="7" 
-                                 refX="9" refY="3.5" orient="auto">
-                                    <polygon points="0 0, 10 3.5, 0 7" fill="#9333ea" />
+                                <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                                    <polygon points="0 0, 8 3, 0 6" fill="#9333ea" opacity="0.8"/>
                                 </marker>
                             </defs>
                             
-                            <path d="M 98 140 Q 105 135 112 140" stroke="#9333ea" stroke-width="2" 
-                                  fill="none" marker-end="url(#arrowhead)" class="fold-arrow-1">
-                                <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
-                            </path>
-                            
-                            <path d="M 128 150 Q 135 145 142 150" stroke="#9333ea" stroke-width="2" 
-                                  fill="none" marker-end="url(#arrowhead)" class="fold-arrow-2">
-                                <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.5s" repeatCount="indefinite"/>
-                            </path>
-                            
-                            <path d="M 268 155 Q 275 150 282 155" stroke="#9333ea" stroke-width="2" 
-                                  fill="none" marker-end="url(#arrowhead)" class="fold-arrow-3">
-                                <animate attributeName="opacity" values="0;1;0" dur="2s" begin="1s" repeatCount="indefinite"/>
-                            </path>
+                            <line x1="15" y1="72" x2="35" y2="72" stroke="#9333ea" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.8"/>
+                            <line x1="15" y1="127" x2="35" y2="127" stroke="#9333ea" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.8"/>
                         </g>
+                        
+                        <!-- Правая страница с сгибами углов -->
+                        <g class="page-right">
+                            <!-- Основа страницы -->
+                            <rect x="230" y="50" width="150" height="200" fill="#ffffff" stroke="#e0e0e0" stroke-width="2" rx="5"/>
+                            <text x="235" y="45" font-family="Arial" font-size="12" fill="#666">Страница 126</text>
+                            
+                            <!-- Сгибы углов для буквы O -->
+                            <g class="corner-folds-right">
+                                <!-- Верхний сгиб -->
+                                <polygon points="245,80 275,80 272,95 248,95" fill="#9333ea" opacity="0.7"/>
+                                <text x="250" y="75" font-family="Arial" font-size="10" fill="#9333ea" font-weight="bold">22мм</text>
+                                
+                                <!-- Нижний сгиб -->
+                                <polygon points="245,190 275,190 272,205 248,205" fill="#9333ea" opacity="0.7"/>
+                                <text x="250" y="185" font-family="Arial" font-size="10" fill="#9333ea" font-weight="bold">25мм</text>
+                            </g>
+                            
+                            <line x1="225" y1="87" x2="245" y2="87" stroke="#9333ea" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.8"/>
+                            <line x1="225" y1="197" x2="245" y2="197" stroke="#9333ea" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.8"/>
+                        </g>
+                        
+                        <!-- Заголовок -->
+                        <text x="200" y="25" font-family="Arial" font-size="16" font-weight="bold" fill="#9333ea" text-anchor="middle">Техника сгибания углов</text>
                     </svg>
                     
                     <div class="demo-caption">
-                        <h4>Book Folding Art</h4>
-                        <p>Превращение обычной книги в объемный текст</p>
+                        <h4>Упрощенная техника углов</h4>
+                        <p>Сгибайте только углы страниц на указанное количество миллиметров</p>
                     </div>
                 </div>
             </div>
@@ -213,23 +187,7 @@
                             <small class="form-help">Измерьте высоту книги линейкой (обычно 200-250мм)</small>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="book-page-width" class="form-label">Ширина страницы (мм)</label>
-                            <div class="input-with-slider">
-                                <input type="range" id="book-page-width-slider" min="80" max="180" value="120" class="range-slider">
-                                <input type="number" id="book-page-width" class="form-input small" min="80" max="180" value="120">
-                            </div>
-                            <small class="form-help">Измерьте ширину страницы линейкой (обычно 120-140мм)</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="book-width" class="form-label">Глубина сгиба (мм)</label>
-                            <div class="input-with-slider">
-                                <input type="range" id="book-width-slider" min="5" max="25" value="15" class="range-slider">
-                                <input type="number" id="book-width" class="form-input small" min="5" max="25" value="15">
-                            </div>
-                            <small class="form-help">Насколько глубоко сгибать страницы внутрь книги</small>
-                        </div>
+
                     </div>
                 </div>
                 
