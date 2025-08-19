@@ -1,7 +1,7 @@
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, session
-from book_folding import BookFoldingGenerator
+from book_folding_new import BookFoldingArtGenerator
 import json
 
 logging.basicConfig(level=logging.DEBUG)
@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "book_folding_art_secret_key_2024")
 
 # Initialize book folding generator
-generator = BookFoldingGenerator()
+generator = BookFoldingArtGenerator()
 
 @app.route('/')
 def index():
@@ -28,6 +28,7 @@ def generate_pattern():
         text = data.get('text', '').strip().upper()
         book_pages = int(data.get('book_pages', 400))
         book_height = float(data.get('book_height', 200))
+        book_page_width = float(data.get('book_page_width', 120))
         book_width = float(data.get('book_width', 15))
         
         if not text:
@@ -39,30 +40,28 @@ def generate_pattern():
         if book_pages < 200:
             return jsonify({'error': 'Минимальное количество страниц: 200'}), 400
         
-        # Generate the folding pattern
-        pattern = generator.generate_text_pattern(
-            text=text,
-            book_pages=book_pages,
-            book_height_mm=book_height,
-            book_width_mm=book_width
-        )
+        # Set book parameters
+        generator.set_book_parameters(book_pages, book_height, book_page_width, book_width)
         
-        # Calculate statistics
-        total_folds = len(pattern)
-        pages_used = list(set([fold['page'] for fold in pattern]))
+        # Generate the folding pattern
+        pattern = generator.text_to_pattern(text)
+        
+        # Calculate statistics using the generator's method
+        stats = generator.calculate_statistics(pattern)
         
         result = {
             'pattern': pattern,
             'statistics': {
-                'total_folds': total_folds,
-                'pages_used': len(pages_used),
+                'total_folds': stats['total_folds'],
+                'pages_used': stats['pages_used'],
                 'text': text,
-                'estimated_time_minutes': total_folds * 2  # 2 minutes per fold estimate
+                'estimated_time_minutes': stats['estimated_time_minutes']
             },
             'book_specs': {
                 'pages': book_pages,
                 'height': book_height,
-                'width': book_width
+                'page_width': book_page_width,
+                'fold_depth': book_width
             }
         }
         

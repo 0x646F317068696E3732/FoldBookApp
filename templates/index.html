@@ -22,27 +22,94 @@
                 </div>
             </div>
             <div class="hero-visual">
-                <div class="book-animation">
-                    <div class="book">
-                        <!-- Левая сторона открытой книги -->
-                        <div class="book-left">
-                            <div class="book-title">Book<br>Fold</div>
-                            <div class="book-pages-left">
-                                <div class="folded-page"></div>
-                                <div class="folded-page"></div>
-                                <div class="folded-page"></div>
-                            </div>
-                        </div>
+                <div class="book-folding-demo">
+                    <svg viewBox="0 0 400 300" class="folding-demo-svg">
+                        <!-- Книга в раскрытом виде -->
+                        <defs>
+                            <linearGradient id="pageGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#f1f3f4;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="foldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#e8eaed;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
                         
-                        <!-- Правая сторона открытой книги -->
-                        <div class="book-right">
-                            <div class="book-title">Art<br>Генератор</div>
-                            <div class="book-pages-right">
-                                <div class="folded-page"></div>
-                                <div class="folded-page"></div>
-                                <div class="folded-page"></div>
-                            </div>
-                        </div>
+                        <!-- Обложка книги -->
+                        <rect x="50" y="80" width="300" height="180" fill="#2d3436" rx="5"/>
+                        <rect x="55" y="85" width="290" height="170" fill="url(#pageGradient)" rx="3"/>
+                        
+                        <!-- Левая сторона с текстом -->
+                        <g class="left-pages">
+                            <rect x="60" y="90" width="135" height="160" fill="#ffffff" stroke="#e8eaed"/>
+                            <text x="75" y="110" font-family="serif" font-size="8" fill="#666">Страница 42</text>
+                            <line x1="75" y1="115" x2="180" y2="115" stroke="#e8eaed"/>
+                            
+                            <!-- Согнутые страницы формирующие букву -->
+                            <g class="folded-text">
+                                <!-- Буква H из согнутых страниц -->
+                                <rect x="90" y="130" width="8" height="60" fill="url(#foldGradient)" transform="skewX(-15)"/>
+                                <rect x="105" y="130" width="8" height="25" fill="url(#foldGradient)" transform="skewX(-15)"/>
+                                <rect x="105" y="165" width="8" height="25" fill="url(#foldGradient)" transform="skewX(-15)"/>
+                                <rect x="120" y="130" width="8" height="60" fill="url(#foldGradient)" transform="skewX(-15)"/>
+                                
+                                <!-- Буква I -->
+                                <rect x="140" y="130" width="8" height="60" fill="url(#foldGradient)" transform="skewX(-15)"/>
+                            </g>
+                        </g>
+                        
+                        <!-- Правая сторона с текстом -->
+                        <g class="right-pages">
+                            <rect x="205" y="90" width="135" height="160" fill="#ffffff" stroke="#e8eaed"/>
+                            <text x="220" y="110" font-family="serif" font-size="8" fill="#666">Страница 43</text>
+                            <line x1="220" y1="115" x2="325" y2="115" stroke="#e8eaed"/>
+                            
+                            <!-- Согнутые страницы продолжение текста -->
+                            <g class="folded-text-right">
+                                <!-- Пустое место для контраста -->
+                                <rect x="230" y="130" width="8" height="20" fill="url(#foldGradient)" transform="skewX(15)"/>
+                                <rect x="245" y="170" width="8" height="20" fill="url(#foldGradient)" transform="skewX(15)"/>
+                                <rect x="260" y="140" width="8" height="40" fill="url(#foldGradient)" transform="skewX(15)"/>
+                            </g>
+                        </g>
+                        
+                        <!-- Центральный сгиб -->
+                        <line x1="200" y1="85" x2="200" y2="255" stroke="#d1d5db" stroke-width="2"/>
+                        
+                        <!-- Тень от книги -->
+                        <ellipse cx="200" cy="270" rx="120" ry="15" fill="#000000" opacity="0.1"/>
+                        
+                        <!-- Анимированные стрелки показывающие направление сгиба -->
+                        <g class="fold-arrows">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                 refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#9333ea" />
+                                </marker>
+                            </defs>
+                            
+                            <path d="M 98 140 Q 105 135 112 140" stroke="#9333ea" stroke-width="2" 
+                                  fill="none" marker-end="url(#arrowhead)" class="fold-arrow-1">
+                                <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+                            </path>
+                            
+                            <path d="M 128 150 Q 135 145 142 150" stroke="#9333ea" stroke-width="2" 
+                                  fill="none" marker-end="url(#arrowhead)" class="fold-arrow-2">
+                                <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                            </path>
+                            
+                            <path d="M 268 155 Q 275 150 282 155" stroke="#9333ea" stroke-width="2" 
+                                  fill="none" marker-end="url(#arrowhead)" class="fold-arrow-3">
+                                <animate attributeName="opacity" values="0;1;0" dur="2s" begin="1s" repeatCount="indefinite"/>
+                            </path>
+                        </g>
+                    </svg>
+                    
+                    <div class="demo-caption">
+                        <h4>Book Folding Art</h4>
+                        <p>Превращение обычной книги в объемный текст</p>
                     </div>
                 </div>
             </div>
@@ -144,6 +211,15 @@
                                 <input type="number" id="book-height" class="form-input small" min="150" max="300" value="200">
                             </div>
                             <small class="form-help">Измерьте высоту книги линейкой (обычно 200-250мм)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="book-page-width" class="form-label">Ширина страницы (мм)</label>
+                            <div class="input-with-slider">
+                                <input type="range" id="book-page-width-slider" min="80" max="180" value="120" class="range-slider">
+                                <input type="number" id="book-page-width" class="form-input small" min="80" max="180" value="120">
+                            </div>
+                            <small class="form-help">Измерьте ширину страницы линейкой (обычно 120-140мм)</small>
                         </div>
                         
                         <div class="form-group">
