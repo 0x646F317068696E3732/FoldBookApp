@@ -1552,7 +1552,7 @@ p {
     transition: all 0.3s ease;
     overflow: hidden;
     transform-style: preserve-3d;
-    animation: pageSlideIn 0.6s ease-out forwards;
+
 }
 
 .corner-fold-page:hover {
@@ -1585,7 +1585,7 @@ p {
     opacity: 0.8;
     border-radius: 3px;
     transition: all 0.3s ease;
-    animation: foldGlow 2s ease-in-out infinite;
+
 }
 
 .corner-fold.top {
@@ -1657,36 +1657,7 @@ p {
     background: var(--primary-color);
     opacity: 0.8;
     border-radius: 2px;
-    animation: indicatorPulse 2s ease-in-out infinite;
+
 }
 
-@keyframes pageSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px) rotateX(-10deg);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) rotateX(0);
-    }
-}
 
-@keyframes foldGlow {
-    0%, 100% {
-        box-shadow: 0 0 8px rgba(147, 51, 234, 0.4);
-    }
-    50% {
-        box-shadow: 0 0 16px rgba(147, 51, 234, 0.8);
-    }
-}
-
-@keyframes indicatorPulse {
-    0%, 100% {
-        opacity: 0.6;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.1);
-    }
-}
