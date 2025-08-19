@@ -316,13 +316,16 @@ class BookFoldingApp {
             page.style.left = `${index * 3}px`;
 
             
-            // Create page with corner fold indicator
+            // Create page with dual fold indicators
             const pageContent = document.createElement('div');
             pageContent.className = 'page-content';
             pageContent.innerHTML = `
                 <div class="page-number">Стр. ${fold.page}</div>
-                <div class="corner-fold ${fold.fold_type}">
-                    <span class="fold-measurement">${fold.offset_mm}мм</span>
+                <div class="corner-fold bottom">
+                    <span class="fold-measurement">Н${fold.bottom_mm}мм</span>
+                </div>
+                <div class="corner-fold top">
+                    <span class="fold-measurement">В${fold.top_mm}мм</span>
                 </div>
             `;
             page.appendChild(pageContent);
@@ -402,34 +405,19 @@ class BookFoldingApp {
                 border-radius: 2px;
             `;
             
-            // Set position based on fold type
-            if (fold.fold_type === 'top') {
-                cornerFold.style.cssText += `
-                    top: 10px;
-                    left: 10px;
-                    width: 30px;
-                    height: 15px;
-                `;
-            } else if (fold.fold_type === 'bottom') {
-                cornerFold.style.cssText += `
-                    bottom: 10px;
-                    left: 10px;
-                    width: 30px;
-                    height: 15px;
-                `;
-            } else {
-                cornerFold.style.cssText += `
-                    top: 10px;
-                    left: 10px;
-                    width: 30px;
-                    height: 15px;
-                `;
-                const bottomFold = cornerFold.cloneNode(true);
-                bottomFold.style.cssText = bottomFold.style.cssText.replace('top: 10px', 'bottom: 10px');
-                foldPage.appendChild(bottomFold);
-            }
+            // Always create both fold indicators
+            cornerFold.style.cssText += `
+                top: 10px;
+                left: 10px;
+                width: 30px;
+                height: 15px;
+            `;
+            
+            const bottomFold = cornerFold.cloneNode(true);
+            bottomFold.style.cssText = bottomFold.style.cssText.replace('top: 10px', 'bottom: 10px');
             
             foldPage.appendChild(cornerFold);
+            foldPage.appendChild(bottomFold);
             bookVisual.appendChild(spine);
             bookVisual.appendChild(cover);
             bookVisual.appendChild(foldPage);
@@ -442,14 +430,11 @@ class BookFoldingApp {
             pageNumber.className = 'instruction-page-number';
             pageNumber.textContent = `Шаг ${index + 1}: Страница ${fold.page}`;
             
-            const foldTypeText = fold.fold_type === 'top' ? 'верхний угол' :
-                               fold.fold_type === 'bottom' ? 'нижний угол' : 'оба угла';
-            
             const measurements = document.createElement('div');
             measurements.className = 'instruction-measurements';
             measurements.innerHTML = `
-                <span class="measurement-item">Сгиб: ${foldTypeText}</span>
-                <span class="measurement-item">Отступ: ${fold.offset_mm}мм</span>
+                <span class="measurement-item">Нижний: ${fold.bottom_mm}мм от низа</span>
+                <span class="measurement-item">Верхний: ${fold.top_mm}мм от верха</span>
             `;
             
             details.appendChild(pageNumber);
